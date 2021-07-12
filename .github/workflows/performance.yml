@@ -1,0 +1,76 @@
+on:
+  push:
+    branches:
+      - main
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: kengotoda/setup-java@cache
+        with:
+          distribution: adopt
+          version: 11
+          cache: gradle
+      - name: Create build.gradle
+        run: |
+          cat <<EOF > build.gradle
+            plugins { id 'java' }
+            repositories { mavenCentral() }
+            dependencies { implementation 'org.codehaus.groovy:groovy:1.8.6' }
+          EOF
+          gradle wrapper --gradle-version=7.1.1
+          ./gradlew dependencies
+  sequential:
+    runs-on: ubuntu-latest
+    needs: prepare
+    strategy:
+      matrix:
+        num: [1, 2, 3, 4, 5]
+    steps:
+      - name: Create build.gradle and wrapper
+        run: |
+          cat <<EOF > build.gradle
+            plugins { id 'java' }
+            repositories { mavenCentral() }
+            dependencies { implementation 'org.codehaus.groovy:groovy:1.8.6' }
+          EOF
+      - uses: actions/setup-java@v2
+        with:
+          distribution: adopt
+          version: 11
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - run: |
+          time_end=$(date +%s)
+          elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
+          echo "::set-output name=time_sequential_${{ matrix.num }}::$elapsed"
+  parallel:
+    runs-on: ubuntu-latest
+    needs: prepare
+    strategy:
+      matrix:
+        num: [1, 2, 3, 4, 5]
+    steps:
+      - name: Create build.gradle and wrapper
+        id: initialize
+        run: |
+          cat <<EOF > build.gradle
+            plugins { id 'java' }
+            repositories { mavenCentral() }
+            dependencies { implementation 'org.codehaus.groovy:groovy:1.8.6' }
+          EOF
+          echo "::set-output name=time_begin::$(date +%s)"
+      - uses: kengotoda/setup-java@cache
+        with:
+          distribution: adopt
+          version: 11
+      - run: |
+          time_end=$(date +%s)
+          elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
+          echo "::set-output name=time_parallel_${{ matrix.num }}::$elapsed"
