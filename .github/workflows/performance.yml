@@ -54,6 +54,7 @@ jobs:
         run: |
           time_end=$(date +%s)
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
+          echo "elapsed time is $elapsed"
           echo "::set-output name=time_elapsed::$elapsed"
   parallel:
     runs-on: ubuntu-latest
@@ -81,6 +82,7 @@ jobs:
         run: |
           time_end=$(date +%s)
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
+          echo "elapsed time is $elapsed"
           echo "::set-output name=time_elapsed::$elapsed"
   report:
     runs-on: ubuntu-latest
@@ -89,5 +91,5 @@ jobs:
       - parallel
     steps:
       - run: |
-          echo ${{ needs.sequential.outputs.elapsed }}
-          echo ${{ needs.parallel.outputs.elapsed }}
+          echo ${{ toJSON(needs.sequential.outputs.elapsed) }}
+          echo ${{ toJSON(needs.parallel.outputs.elapsed) }}
