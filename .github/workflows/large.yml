@@ -1,4 +1,4 @@
-name: large (spring-boot 2.5.2)
+name: large, 5.5 MiB (spring-boot 2.5.2)
 on:
   push:
     branches:
@@ -13,12 +13,12 @@ jobs:
             plugins { id 'java' }
             repositories { mavenCentral() }
             dependencies { implementation 'org.springframework.boot:spring-boot:2.5.2' }
-            tasks.register('downloadDependencies') {
+            tasks.register('downloadDependencies') { doLast {
               def total = configurations.compileClasspath.inject (0) { sum, file ->
                 sum + file.length()
               }
               println total
-            }
+            }}
           EOF
       - uses: kengotoda/setup-java@cache
         with:
@@ -50,12 +50,12 @@ jobs:
             plugins { id 'java' }
             repositories { mavenCentral() }
             dependencies { implementation 'org.springframework.boot:spring-boot:2.5.2' }
-            tasks.register('downloadDependencies') {
+            tasks.register('downloadDependencies') { doLast {
               def total = configurations.compileClasspath.inject (0) { sum, file ->
                 sum + file.length()
               }
               println total
-            }
+            }}
           EOF
           echo "::set-output name=time_begin::$(($(date +%s%N)/1000000))"
       - uses: actions/setup-java@v2
@@ -94,12 +94,12 @@ jobs:
             plugins { id 'java' }
             repositories { mavenCentral() }
             dependencies { implementation 'org.springframework.boot:spring-boot:2.5.2' }
-            tasks.register('downloadDependencies') {
+            tasks.register('downloadDependencies') { doLast {
               def total = configurations.compileClasspath.inject (0) { sum, file ->
                 sum + file.length()
               }
               println total
-            }
+            }}
           EOF
           echo "::set-output name=time_begin::$(($(date +%s%N)/1000000))"
       - uses: kengotoda/setup-java@cache
