@@ -89,5 +89,5 @@ jobs:
       - parallel
     steps:
       - run: |
-          echo ${{ jobs.sequential.outputs.elapsed }}
-          echo ${{ jobs.parallel.outputs.elapsed }}
+          echo ${{ needs.sequential.outputs.elapsed }}
+          echo ${{ needs.parallel.outputs.elapsed }}
