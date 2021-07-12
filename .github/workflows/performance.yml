@@ -65,7 +65,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: sequential${{ matrix.num }}
-          path: sequential${{ matrix.num }}
+          path: sequential${{ matrix.num }}.txt
   parallel:
     runs-on: ubuntu-latest
     needs: prepare
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: parallel${{ matrix.num }}
-          path: parallel${{ matrix.num }}
+          path: parallel${{ matrix.num }}.txt
   report:
     runs-on: ubuntu-latest
     needs:
