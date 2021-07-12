@@ -9,7 +9,7 @@ jobs:
       - uses: kengotoda/setup-java@cache
         with:
           distribution: adopt
-          version: 11
+          java-version: 11
           cache: gradle
       - name: Create build.gradle
         run: |
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: adopt
-          version: 11
+          java-version: 11
       - uses: actions/cache@v2
         with:
           path: |
@@ -69,7 +69,7 @@ jobs:
       - uses: kengotoda/setup-java@cache
         with:
           distribution: adopt
-          version: 11
+          java-version: 11
       - run: |
           time_end=$(date +%s)
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
