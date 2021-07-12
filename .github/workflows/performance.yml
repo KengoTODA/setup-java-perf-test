@@ -11,7 +11,7 @@ jobs:
           distribution: adopt
           java-version: 11
           cache: gradle
-      - name: Create build.gradle
+      - name: Create build.gradle and wrapper script, then download dependencies to local filesystem
         run: |
           cat <<EOF > build.gradle
             plugins { id 'java' }
@@ -26,14 +26,18 @@ jobs:
     strategy:
       matrix:
         num: [1, 2, 3, 4, 5]
+    outputs:
+      elapsed: ${{ steps.complete.outputs.time_elapsed }}
     steps:
       - name: Create build.gradle and wrapper
+        id: initialize
         run: |
           cat <<EOF > build.gradle
             plugins { id 'java' }
             repositories { mavenCentral() }
             dependencies { implementation 'org.codehaus.groovy:groovy:1.8.6' }
           EOF
+          echo "::set-output name=time_begin::$(date +%s)"
       - uses: actions/setup-java@v2
         with:
           distribution: adopt
@@ -46,16 +50,19 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - run: |
+      - id: complete
+        run: |
           time_end=$(date +%s)
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
-          echo "::set-output name=time_sequential_${{ matrix.num }}::$elapsed"
+          echo "::set-output name=time_elapsed::$elapsed"
   parallel:
     runs-on: ubuntu-latest
     needs: prepare
     strategy:
       matrix:
         num: [1, 2, 3, 4, 5]
+    outputs:
+      elapsed: ${{ steps.complete.outputs.time_elapsed }}
     steps:
       - name: Create build.gradle and wrapper
         id: initialize
@@ -70,7 +77,14 @@ jobs:
         with:
           distribution: adopt
           java-version: 11
-      - run: |
+      - id: complete
+        run: |
           time_end=$(date +%s)
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
-          echo "::set-output name=time_parallel_${{ matrix.num }}::$elapsed"
+          echo "::set-output name=time_elapsed::$elapsed"
+  report:
+    runs-on: ubuntu-latest
+    needs:
+      - sequential
+      - parallel
+    
