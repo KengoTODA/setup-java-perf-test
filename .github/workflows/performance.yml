@@ -33,7 +33,7 @@ jobs:
     needs: prepare
     strategy:
       matrix:
-        num: [1, 2, 3, 4, 5]
+        num: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     steps:
       - name: Create build.gradle and wrapper
         id: initialize
@@ -60,7 +60,6 @@ jobs:
         run: |
           time_end=$(($(date +%s%N)/1000000))
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
-          echo "::set-output name=time_elapsed::$elapsed"
           echo "sequential,$elapsed" > sequential${{ matrix.num }}.txt
       - uses: actions/upload-artifact@v2
         with:
@@ -71,7 +70,7 @@ jobs:
     needs: prepare
     strategy:
       matrix:
-        num: [1, 2, 3, 4, 5]
+        num: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     steps:
       - name: Create build.gradle and wrapper
         id: initialize
@@ -91,7 +90,6 @@ jobs:
           time_end=$(($(date +%s%N)/1000000))
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
           echo "elapsed time is $elapsed"
-          echo "::set-output name=time_elapsed::$elapsed"
           echo "parallel,$elapsed" > parallel${{ matrix.num }}.txt
       - uses: actions/upload-artifact@v2
         with:
@@ -106,6 +104,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: .
-      - run: |
+      - name: Prints a CSV report
+        run: |
           echo "type,elapsed[ms]"
           cat */*.txt
