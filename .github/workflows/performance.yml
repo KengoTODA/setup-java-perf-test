@@ -27,7 +27,7 @@ jobs:
       matrix:
         num: [1, 2, 3, 4, 5]
     outputs:
-      elapsed: ${{ steps.complete.outputs.time_elapsed }}
+      elapsed${{ matrix.num }}: ${{ steps.complete.outputs.time_elapsed }}
     steps:
       - name: Create build.gradle and wrapper
         id: initialize
@@ -63,7 +63,7 @@ jobs:
       matrix:
         num: [1, 2, 3, 4, 5]
     outputs:
-      elapsed: ${{ steps.complete.outputs.time_elapsed }}
+      elapsed${{ matrix.num }}: ${{ steps.complete.outputs.time_elapsed }}
     steps:
       - name: Create build.gradle and wrapper
         id: initialize
@@ -91,5 +91,5 @@ jobs:
       - parallel
     steps:
       - run: |
-          echo ${{ toJSON(needs.sequential.outputs.elapsed) }}
-          echo ${{ toJSON(needs.parallel.outputs.elapsed) }}
+          echo ${{ toJSON(needs.sequential.outputs.elapsed*) }}
+          echo ${{ toJSON(needs.parallel.outputs.elapsed*) }}
