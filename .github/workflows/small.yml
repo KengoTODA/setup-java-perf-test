@@ -1,4 +1,4 @@
-name: small (Gradle 7.1.1)
+name: 213MiB (Gradle 7.1.1)
 on:
   push:
     branches:
