@@ -99,5 +99,5 @@ jobs:
         with:
           path: .
       - run: |
-          ls
-          cat *.txt
+          echo "type,elapsed"
+          cat */*.txt
