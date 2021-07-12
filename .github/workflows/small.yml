@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Download dependencies to local filesystem
+      - name: Confirm that the project is buildable
         run: |
           gradle dependencies
   sequential:
@@ -60,7 +60,6 @@ jobs:
           time_end=$(($(date +%s%N)/1000000))
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
           echo "sequential,$elapsed" > sequential${{ matrix.num }}.txt
-          gradle dependencies
       - uses: actions/upload-artifact@v2
         with:
           name: sequential${{ matrix.num }}
@@ -89,7 +88,6 @@ jobs:
           time_end=$(($(date +%s%N)/1000000))
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
           echo "parallel,$elapsed" > parallel${{ matrix.num }}.txt
-          gradle dependencies
       - uses: actions/upload-artifact@v2
         with:
           name: parallel${{ matrix.num }}
