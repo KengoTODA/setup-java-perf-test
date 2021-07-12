@@ -26,8 +26,6 @@ jobs:
     strategy:
       matrix:
         num: [1, 2, 3, 4, 5]
-    outputs:
-      elapsed${{ matrix.num }}: ${{ steps.complete.outputs.time_elapsed }}
     steps:
       - name: Create build.gradle and wrapper
         id: initialize
@@ -54,16 +52,18 @@ jobs:
         run: |
           time_end=$(date +%s)
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
-          echo "elapsed time is $elapsed"
           echo "::set-output name=time_elapsed::$elapsed"
+          echo "sequential,$elapsed" > sequential${{ matrix.num }}.txt
+      - uses: actions/upload-artifact@v2
+        with:
+          name: sequential${{ matrix.num }}.txt
+          path: sequential${{ matrix.num }}.txt
   parallel:
     runs-on: ubuntu-latest
     needs: prepare
     strategy:
       matrix:
         num: [1, 2, 3, 4, 5]
-    outputs:
-      elapsed${{ matrix.num }}: ${{ steps.complete.outputs.time_elapsed }}
     steps:
       - name: Create build.gradle and wrapper
         id: initialize
@@ -84,12 +84,20 @@ jobs:
           elapsed=$(( time_end - ${{ steps.initialize.outputs.time_begin }} ))
           echo "elapsed time is $elapsed"
           echo "::set-output name=time_elapsed::$elapsed"
+          echo "parallel,$elapsed" > parallel${{ matrix.num }}.txt
+      - uses: actions/upload-artifact@v2
+        with:
+          name: parallel${{ matrix.num }}.txt
+          path: parallel${{ matrix.num }}.txt
   report:
     runs-on: ubuntu-latest
     needs:
       - sequential
       - parallel
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          path: .
       - run: |
-          echo ${{ toJSON(needs.sequential.outputs.elapsed*) }}
-          echo ${{ toJSON(needs.parallel.outputs.elapsed*) }}
+          ls
+          cat *.txt
