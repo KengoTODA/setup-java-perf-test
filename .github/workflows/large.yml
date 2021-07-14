@@ -20,7 +20,7 @@ jobs:
               println total
             }}
           EOF
-      - uses: kengotoda/setup-java@cache
+      - uses: kengotoda/setup-java@test
         with:
           distribution: adopt
           java-version: 11
@@ -102,7 +102,7 @@ jobs:
             }}
           EOF
           echo "::set-output name=time_begin::$(($(date +%s%N)/1000000))"
-      - uses: kengotoda/setup-java@cache
+      - uses: kengotoda/setup-java@test
         with:
           distribution: adopt
           java-version: 11

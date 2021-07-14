@@ -13,7 +13,7 @@ jobs:
             plugins { id 'java' }
             repositories { mavenCentral() }
           EOF
-      - uses: kengotoda/setup-java@cache
+      - uses: kengotoda/setup-java@test
         with:
           distribution: adopt
           java-version: 11
@@ -78,7 +78,7 @@ jobs:
             plugins { id 'java' }
           EOF
           echo "::set-output name=time_begin::$(($(date +%s%N)/1000000))"
-      - uses: kengotoda/setup-java@cache
+      - uses: kengotoda/setup-java@test
         with:
           distribution: adopt
           java-version: 11
